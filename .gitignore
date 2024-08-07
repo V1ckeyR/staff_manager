@@ -1,0 +1,63 @@
+# .gitignore
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+bin/
+lib/
+lib64/
+include/
+build/
+dist/
+*.egg-info/
+
+# Django stuff:
+*.log
+*.pot
+*.pyc
+*.pyo
+*.sqlite3
+db.sqlite3
+
+# If you are using SQLite:
+*.sqlite3
+
+# If you are using PostgreSQL:
+*.pgdata
+*.pgsql
+
+# Local settings
+local_settings.py
+
+# Media and static files
+media/
+staticfiles/
+
+# .env file
+.env
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IDEs and editors
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Other
+*.bak
+*.swp
+*~
