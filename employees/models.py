@@ -15,6 +15,7 @@ class Employee(models.Model):
         indexes = [
             models.Index(fields=['manager'])
         ]
+        db_table = 'employees'
 
     def save(self, *args, **kwargs):
         if self.manager == self:  # To prevent circular references
