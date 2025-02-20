@@ -1,0 +1,15 @@
+{% load static %}
+{% load custom_filters %}
+
+<div class="col">
+    <div class="shadow-sm p-2 w-auto card btn btn-outline-light">
+        <div class="d-flex align-items-center text-center">
+            <img src="{% static avatar|random_choice %}" alt="Avatar" width="128px"
+                 class="img-fluid border border-white rounded-circle border-3">
+            <div class="flex-grow-1">
+                <h5 class="text-{{ colors|random_choice }}">{{ manager.last_name }} {{ manager.first_name }}</h5>
+                <p class="text-muted m-0">{{ manager.position }}</p>
+            </div>
+        </div>
+    </div>
+</div>
