@@ -17,24 +17,31 @@ class Command(BaseCommand):
         Employee.objects.all().delete()  # Clear table
 
         fake = Faker()
-        employees_per_level = self.TOTAL // self.LEVELS
-        employees = []
-        for level in range(self.LEVELS):
-            amount = employees_per_level if level < self.LEVELS - 1 else self.TOTAL - len(employees)
-            new_employees = []
-            for _ in range(amount):
-                manager = random.choice(employees) if employees else None
-                new_employees.append(Employee(
+        total = 0
+
+        def create_level(manager=None, level=0):
+            nonlocal total
+
+            if total >= self.TOTAL or level == self.LEVELS:
+                return
+
+            subordinates = []
+            for _ in range(random.randint(5, 20) if manager else 1):
+                subordinates.append(Employee(
                     first_name=fake.first_name(),
                     last_name=fake.last_name(),
                     patronymic=fake.first_name_male(),
                     position=fake.job(),
                     hire_date=fake.date_between(start_date='-10y', end_date='today'),
                     email=fake.unique.email(),
+                    level=level,
                     manager=manager
                 ))
 
-            Employee.objects.bulk_create(new_employees)
-            employees.extend(Employee.objects.filter(id__in=[e.id for e in new_employees]))
+            Employee.objects.bulk_create(subordinates)
+            total += len(subordinates)
+            for emp in subordinates:
+                create_level(emp, level + 1)
 
+        create_level()
         self.stdout.write(self.style.SUCCESS(f'Successfully seeded the database in {time.time() - start_time:.2f}s'))
