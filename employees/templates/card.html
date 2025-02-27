@@ -1,29 +1,24 @@
 {% load static %}
 {% load custom_filters %}
 
-<li class="list-group-item d-inline-flex justify-content-between align-items-center border border-0 p-0">
-    <div id="id_{{manager.level}}_{{manager.id}}" class="wv-100">
-        <div class="shadow-sm p-2 w-auto card btn btn-outline-light md-2">
-            <div class="d-flex align-items-center text-center">
-                <div class="text-primary ">
+<li>
+    <div id="id_{{manager.level}}_{{manager.id}}" class="w-100">
+        <div class="card shadow-sm p-2 btn btn-outline-light m-2" style="width: 350px">
+            <div class="d-flex align-items-stretch text-center">
+                <div class="text-primary">
                     <i class="fa-solid fa-user-tie fa-6x"></i>
                 </div>
                 <div class="flex-grow-1">
                     <h5 class="text-{{ colors|random_choice }}">{{ manager.full_name }}</h5>
                     <p class="text-muted">{{ manager.position }}</p>
-                    {% if manager.manager %}
-                    <h5 class="text-{{ colors|random_choice }}">Manager: {{ manager.manager }}</h5>
-                    {% endif %}
                     {% if manager.has_more_subordinates %}
-                    <button class="toggle-btn">
-                        <i class="fas fa-plus"></i>
-                    </button>
+                    <i class="plus text-primary fas fa-plus"></i>
                     {% endif %}
                 </div>
             </div>
         </div>
         {% if manager.has_more_subordinates %}
-            <ul class="list-group d-flex ms-4 w-100 border-start border-3 border-primary bg-info justify-content-between align-items-center">
+            <ul class="list-unstyled ms-4 mb-4 pb-4 border-start border-3 border-primary shadow-sm flex-wrap flex-row justify-content-around align-items-stretch d-flex">
                 {% for sub in manager.subordinates %}
                     {% include 'card.html' with manager=sub colors=colors avatar=avatar %}
                 {% endfor %}

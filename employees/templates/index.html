@@ -1,8 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<!--<ul class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-3 py-4">-->
-<ul class="list-group wv-100">
+<ul class="list-group wv-100 list-unstyled">
     {% for obj in data %}
         {% include 'card.html' with manager=obj colors=colors avatar=avatar %}
     {% endfor %}

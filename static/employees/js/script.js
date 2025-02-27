@@ -1,11 +1,12 @@
 // Toggle employee subordinates:
-$(".list-group-item").click(function(event) {
+$(".card").click(function(event) {
     event.stopPropagation();
 
-    let nestedList = $(this).find("ul").first();
+    let nestedList = $(this).siblings("ul").first();
+    console.log(nestedList)
     if (nestedList.length) {
-        let icon = $(this).find(".toggle-btn").first().children().first();
-        nestedList.toggleClass("d-none d-inline-flex");
+        let icon = $(this).find(".plus").first().children().first();
+        nestedList.toggleClass("d-none d-flex");
         icon.toggleClass("fa-plus fa-minus");
     }
 })
