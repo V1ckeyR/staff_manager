@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from employees.models import Employee
@@ -12,14 +13,18 @@ class EmployeeSerializer(serializers.ModelSerializer):
         model = Employee
         fields = '__all__'
 
+    @extend_schema_field(serializers.CharField())
     def get_full_name(self, obj):
-        return f"{obj.patronymic} {obj.first_name} {obj.last_name}"
+        return f"{obj.last_name} {obj.first_name} {obj.patronymic}"
 
+    @extend_schema_field(serializers.JSONField())
     def get_subordinates(self, obj):
-        if self.context.get("depth", 1) >= 2:
+        if self.context.get('depth', 0) >= self.context.get('max_depth', 0):
             return []
         subordinates = obj.subordinates.all()
-        return EmployeeSerializer(subordinates, many=True, context={"depth": self.context.get("depth", 1) + 1}).data
+        context = {'depth': self.context.get('depth', 0) + 1, 'max_depth': self.context.get('max_depth', 0)}
+        return EmployeeSerializer(subordinates, many=True, context=context).data
 
+    @extend_schema_field(serializers.BooleanField())
     def get_has_more_subordinates(self, obj):
         return obj.subordinates.filter(subordinates__isnull=False).exists()
