@@ -3,7 +3,7 @@
 
 <li>
     <div id="id_{{manager.level}}_{{manager.id}}" class="w-100">
-        <div class="card shadow-sm p-2 btn btn-outline-light m-2" style="width: 300px">
+        <div class="card shadow-sm p-2 btn btn-outline-light m-2" style="width: 350px">
             <div class="d-flex align-items-stretch text-center">
                 <div class="text-primary">
                     <i class="fa-solid fa-user-tie fa-6x"></i>
@@ -12,15 +12,15 @@
                     <h5 class="text-{{ colors|random_choice }}">{{ manager.full_name }}</h5>
                     <p class="text-muted">{{ manager.position }}</p>
                     {% if manager.has_more_subordinates %}
-                    <i class="plus text-primary fas fa-plus"></i>
+                    <i class="plus text-primary fas fa-plus" manager-id="{{ manager.id }}"></i>
                     {% endif %}
                 </div>
             </div>
         </div>
         {% if manager.has_more_subordinates %}
-            <ul class="list-unstyled ms-4 mb-4 pb-4 border-start border-3 border-primary shadow-sm flex-wrap flex-row justify-content-around align-items-stretch d-flex">
+            <ul id="subordinates_{{manager.id}}" class="list-unstyled ms-4 mb-4 pb-4 border-start border-3 border-primary shadow-sm flex-wrap flex-row justify-content-around align-items-stretch d-none">
                 {% for sub in manager.subordinates %}
-                    {% include 'card.html' with manager=sub colors=colors avatar=avatar %}
+                    {% include 'card.html' with manager=sub colors=colors %}
                 {% endfor %}
             </ul>
         {% endif %}

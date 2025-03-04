@@ -28,3 +28,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
     @extend_schema_field(serializers.BooleanField())
     def get_has_more_subordinates(self, obj):
         return obj.subordinates.filter(subordinates__isnull=False).exists()
+
+
+class ErrorResponseSerializer(serializers.Serializer):
+    error = serializers.CharField()

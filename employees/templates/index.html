@@ -3,7 +3,7 @@
 {% block content %}
 <ul class="list-group wv-100 list-unstyled">
     {% for obj in data %}
-        {% include 'card.html' with manager=obj colors=colors avatar=avatar %}
+        {% include 'card.html' with manager=obj colors=colors %}
     {% endfor %}
 </ul>
 {% endblock %}

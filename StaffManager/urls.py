@@ -18,11 +18,17 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from drf_spectacular.utils import extend_schema
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+
+@extend_schema(exclude=True)
+class HiddenSpectacularSwaggerView(SpectacularAPIView):
+    pass
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/schema/', HiddenSpectacularSwaggerView.as_view(), name='schema'),
     path('api/schema/swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('', include('employees.urls'))
 ]  + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
