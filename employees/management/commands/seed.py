@@ -34,7 +34,6 @@ class Command(BaseCommand):
                     position=fake.job(),
                     hire_date=fake.date_between(start_date='-10y', end_date='today'),
                     email=fake.unique.email(),
-                    level=level,
                     manager=manager
                 ))
 

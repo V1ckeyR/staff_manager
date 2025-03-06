@@ -9,7 +9,6 @@ class Employee(models.Model):
     position = models.CharField(max_length=255)
     hire_date = models.DateField()
     email = models.EmailField(unique=True)
-    level = models.IntegerField()
     manager = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='subordinates')
 
     class Meta:

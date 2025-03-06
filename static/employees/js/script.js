@@ -1,3 +1,35 @@
+$(document).ready(function() {
+    $(".nav-link").click(function(event) {
+        event.preventDefault();
+
+        let pageUrl = $(this).attr("href");
+
+        $.ajax({
+            url: pageUrl,
+            method: "GET",
+            success: function(response) {
+            console.log(response)
+                $("main").html(response);
+                history.pushState(null, "", pageUrl);
+                location.reload();
+            },
+            error: function() {
+                $("main".html("Woops! Try to reload this page :("));
+            }
+        })
+    })
+
+    window.onpopstate = function() {
+        $.ajax({
+            url: location.pathname,
+            method: "GET",
+            success: function(response) {
+                $("main").html(response);
+            }
+        })
+    }
+})
+
 // Toggle employee subordinates:
 $(document).on("click", ".card", function(event) {
     event.stopPropagation();
@@ -21,8 +53,6 @@ $(document).on("click", ".card", function(event) {
             type: "GET",
             headers: {"Accept": "text/html"},
             success: function(response) {
-                console.log('response: ', response);
-
                 let container = $(`#subordinates_${managerId}`);
                 container.append(response);
 

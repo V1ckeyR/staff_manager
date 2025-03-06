@@ -1,10 +1,17 @@
+from dataclasses import field
+
+from django.core.paginator import Paginator
 from django.shortcuts import render
+from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.decorators import api_view
+from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.viewsets import ViewSet
+from rest_framework.viewsets import ViewSet, ReadOnlyModelViewSet
 
 from employees.models import Employee
 from employees.serializers import EmployeeSerializer, ErrorResponseSerializer
@@ -50,8 +57,27 @@ class EmployeeHierarchyView(APIView):
         return Response({"error": "Unknown Accept header"}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class EmployeeView(ViewSet):
-    pass
-    # paginator = Paginator(top_managers, 20)
-    # page_number = request.GET.get("page")
-    # page = paginator.get_page(page_number)
+class EmployeePagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = "page_size"
+    max_page_size = 100
+
+
+class EmployeeTableView(ReadOnlyModelViewSet):
+    queryset = Employee.objects.all().order_by("id")
+    serializer_class = EmployeeSerializer
+    pagination_class = EmployeePagination
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+
+    filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
+    ordering_fields = [field.name for field in Employee._meta.fields]
+    search_fields = [field.name for field in Employee._meta.fields]
+
+    def list(self, request, *args, **kwargs):
+        data = self.get_queryset()
+        page = self.paginate_queryset(data)
+        if request.accepted_renderer.format == "html":
+            return Response({"data": page, "paginator": self.paginator}, template_name="table.html")
+
+        serializer = self.get_serializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
