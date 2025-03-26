@@ -1,4 +1,9 @@
+// TODO: separate js files
+// Employees Table
 $(document).ready(function() {
+//    $("main").css({ opacity: 0, marginTop: "40px" })  // Start hidden & lower
+//           .animate({ opacity: 1, marginTop: "0px" }, 1000, "easeInOutQuad");
+
     $(".nav-link").click(function(event) {
         event.preventDefault();
 

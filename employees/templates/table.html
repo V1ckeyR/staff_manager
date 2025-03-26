@@ -2,40 +2,63 @@
 {% load custom_filters %}
 
 {% block content %}
-<form class="d-flex w-100">
-    <select id="sort" class="form-select me-2">
-        <option value="id" selected>#</option>
-        <option value="full_name">Name</option>
-        <option value="position">Position</option>
-        <option value="-hire_date">Hire date</option>
-        <option value="email">Email</option>
-        <option value="manager">Manager</option>
-    </select>
+<form id="employee-table--search" class="d-flex w-100" action="" method="GET">
+    <!-- Preserve existing query parameters -->
+    {% for key, value in request.GET.items %}
+        {% if key != "search" %}  <!-- Exclude search to avoid duplication -->
+            <input type="hidden" name="{{ key }}" value="{{ value }}">
+        {% endif %}
+    {% endfor %}
 
-    <input type="search" id="search" class="form-control me-2" placeholder="Search" aria-label="Search">
-    <input type="submit" id="applyFilters" class="btn btn-outline-success" value="Apply">
+    <input type="search" name="search" class="form-control me-2" placeholder="Search" aria-label="Search"
+           value="{{ request.GET.search|default:'' }}" onchange="this.form.submit()">
 </form>
 
 <table class="table table-striped table-hover">
     <thead>
         <tr>
-            <th scope="col">#</th>
-            <th scope="col">Name</th>
-            <th scope="col">Position</th>
-            <th scope="col">Hire date</th>
-            <th scope="col">Email</th>
-            <th scope="col">Manager</th>
+            <th scope="col">
+                <a href="?{% querystring 'ordering' 'id' %}"># {% sort_indicator 'id' %}</a>
+            </th>
+            <th scope="col">
+                <a href="?{% querystring 'ordering' 'last_name' %}">Surname {% sort_indicator 'last_name' %}</a>
+            </th>
+            <th scope="col">
+                <a href="?{% querystring 'ordering' 'first_name' %}">Name {% sort_indicator 'first_name' %}</a>
+            </th>
+            <th scope="col">
+                <a href="?{% querystring 'ordering' 'patronymic' %}">Patronymic {% sort_indicator 'patronymic' %}</a>
+            </th>
+            <th scope="col">
+                <a href="?{% querystring 'ordering' 'position' %}">Position {% sort_indicator 'position' %}</a>
+            </th>
+            <th scope="col">
+                <a href="?{% querystring 'ordering' 'hire_date' %}">Hire date {% sort_indicator 'hire_date' %}</a>
+            </th>
+            <th scope="col">
+                <a href="?{% querystring 'ordering' 'email' %}">Email {% sort_indicator 'email' %}</a>
+            </th>
+            <th scope="col">
+                <a href="?{% querystring 'ordering' 'manager' %}">Manager {% sort_indicator 'manager' %}</a>
+            </th>
         </tr>
     </thead>
-    <tbody id="employeeTable" class="table-group-divider">
+    <tbody class="table-group-divider">
         {% for obj in data %}
+        <!--  TODO: detail info {% url 'employees_table-detail' obj.id %}  -->
         <tr>
             <td>{{ obj.id }}</td>
-            <td>{{ obj.full_name }}</td>
+            <td>{{ obj.last_name }}</td>
+            <td>{{ obj.first_name }}</td>
+            <td>{{ obj.patronymic }}</td>
             <td>{{ obj.position }}</td>
             <td>{{ obj.hire_date }}</td>
             <td>{{ obj.email }}</td>
             <td>{{ obj.manager }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="2">No employees found.</td>
         </tr>
         {% endfor %}
     </tbody>
@@ -45,17 +68,17 @@
     <ul class="pagination justify-content-center">
         {% if paginator.page.has_previous %}
             <li class="page-item">
-                <a href="?page=1" class="page-link">1</a>
+                <a href="?{% querystring 'page' 1 %}" class="page-link">1</a>
             </li>
             <li class="page-item">
-                <a href="?page={{ paginator.page.previous_page_number }}" class="page-link"><</a>
+                <a href="?{% querystring 'page' paginator.page.previous_page_number %}" class="page-link"><</a>
             </li>
         {% endif %}
         {% range_list paginator.page.number|add:-5 paginator.page.number|add:5 as page_range%}
         {% for i in page_range %}
             {% if i > 0 and i <= paginator.page.paginator.num_pages %}
                 <li class="page-item">
-                    <a href="?page={{ i }}" class="page-link {% if paginator.page.number == i %}active{% endif %}">
+                    <a href="?{% querystring 'page' i %}" class="page-link {% if paginator.page.number == i %}active{% endif %}">
                         {{ i }}
                     </a>
                 </li>
@@ -63,10 +86,10 @@
         {% endfor %}
         {% if paginator.page.has_next %}
             <li class="page-item">
-                <a href="?page={{ paginator.page.next_page_number }}" class="page-link">></a>
+                <a href="?{% querystring 'page' paginator.page.next_page_number %}" class="page-link">></a>
             </li>
             <li class="page-item">
-                <a href="?page={{ paginator.page.paginator.num_pages }}" class="page-link">{{ paginator.page.paginator.num_pages }}</a>
+                <a href="?{% querystring 'page' paginator.page.paginator.num_pages %}" class="page-link">{{ paginator.page.paginator.num_pages }}</a>
             </li>
         {% endif %}
     </ul>

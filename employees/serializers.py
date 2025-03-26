@@ -12,6 +12,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
         fields = '__all__'
+        extra_fields = ['full_name', 'subordinates', 'has_more_subordinates']
 
     @extend_schema_field(serializers.CharField())
     def get_full_name(self, obj):

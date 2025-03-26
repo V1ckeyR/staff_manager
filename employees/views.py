@@ -1,6 +1,4 @@
-from dataclasses import field
-
-from django.core.paginator import Paginator
+from django.db.models import Q
 from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
@@ -11,11 +9,10 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.viewsets import ViewSet, ReadOnlyModelViewSet
+from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from employees.models import Employee
 from employees.serializers import EmployeeSerializer, ErrorResponseSerializer
-
 
 COLORS = ['primary', 'success', 'danger', 'warning', 'info']
 
@@ -58,20 +55,41 @@ class EmployeeHierarchyView(APIView):
 
 
 class EmployeePagination(PageNumberPagination):
-    page_size = 10
+    page_size = 15
     page_size_query_param = "page_size"
     max_page_size = 100
 
 
 class EmployeeTableView(ReadOnlyModelViewSet):
-    queryset = Employee.objects.all().order_by("id")
+    queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
     pagination_class = EmployeePagination
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
 
     filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
+    ordering = 'id'  # default ordering field
     ordering_fields = [field.name for field in Employee._meta.fields]
     search_fields = [field.name for field in Employee._meta.fields]
+
+    def get_queryset(self):
+        ordering_query = self.request.query_params.get("ordering", self.ordering)
+        search_query = self.request.query_params.get("search", "")
+
+        if ordering_query.lstrip("-") not in self.ordering_fields:
+            ordering_query = self.ordering
+
+        queryset = self.queryset.order_by(ordering_query)
+        if search_query:
+            queryset = queryset.filter(
+                Q(first_name__icontains=search_query) |
+                Q(last_name__icontains=search_query) |
+                Q(patronymic__icontains=search_query) |
+                Q(position__icontains=search_query) |
+                Q(email__icontains=search_query) |
+                Q(hire_date__icontains=search_query)
+            ) or queryset
+
+        return queryset
 
     def list(self, request, *args, **kwargs):
         data = self.get_queryset()
